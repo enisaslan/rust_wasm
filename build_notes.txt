@@ -1,0 +1,35 @@
+wasm-pack new test0
+wasm-pack build --target web
+
+cargo install miniserve
+miniserve . --index "index.html" -p 8080
+
+wasm-pack build --target web
+python3 -m http.server 8080
+
+cargo add js-sys
+cargo add web-sys
+
+https://rustwasm.github.io/wasm-pack/installer/
+
+npm run start
+npm init wasm-app www
+
+python3 -m http.server
+
+cargo check
+npm i -g webpack-cl
+npm run serve
+
+npm i -g webpack-cl
+npm install --save-dev webpack
+npm run serve
+
+
+
+
+
+
+
+
+
