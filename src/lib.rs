@@ -1,7 +1,7 @@
 use std::slice::Windows;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::{closure::Closure, JsValue};
-use web_sys::{Document, MouseEvent, Window};
+use web_sys::{console, HtmlButtonElement, Document, MouseEvent, Window, Event, HtmlElement};
 
 #[wasm_bindgen]
 extern "C" {
@@ -13,23 +13,55 @@ pub fn greet(name: &str) {
     alert(&format!("Hello, {}!", name));
 }
 
+static mut counter:i32 = 0;
+
 #[wasm_bindgen(start)]
 fn run() -> Result<(), JsValue> {
     // Use `web_sys`'s global `window` function to get a handle on the global
     // window object.
-    let window = web_sys::window().expect("no global `window` exists");
-    let document = window.document().expect("should have a document on window");
-    let body = document.body().expect("document should have a body");
+    let window = web_sys::window().unwrap();
+    let document: Document = window.document().unwrap();
+    let body = document.body().unwrap();
 
-    // Manufacture the element we're gonna append
-    let val = document.create_element("p")?;
-    let button = document.create_element("button")?;
+    let val: web_sys::Element = document.create_element("p")?;
+    let increment = document.create_element("button")?;
+    let decrement = document.create_element("button")?;
 
-    val.set_text_content(Some("Hello from Rust!"));
-    button.set_text_content(Some("Click Me !"));
-
+    body.append_child(&increment)?;
+    body.append_child(&decrement)?;
     body.append_child(&val)?;
-    body.append_child(&button)?;
+
+    val.set_text_content(Some("Value: 0"));
+    increment.set_text_content(Some(" + "));
+    decrement.set_text_content(Some(" - "));
+    
+    //let valy = val.clone();
+    let closure_inc = Closure::wrap(Box::new(move |_eventi: Event| 
+    {
+        unsafe{
+            counter +=1;
+            web_sys::console::log_1(&format!("Counter Value: {}", counter).into());
+            //val.set_text_content(Some(&format!("Value: {counter}")));
+        }
+
+    }) as Box<dyn FnMut(_)>);
+
+    increment.add_event_listener_with_callback("click", closure_inc.as_ref().unchecked_ref())
+    .expect("Failed to add event listener");
+    closure_inc.forget();
+
+    let closure_dec = Closure::wrap(Box::new(move |_eventxd: Event| 
+    {
+        unsafe{
+            counter -=1;
+            web_sys::console::log_1(&format!("Counter Value: {}", counter).into());
+            //val.set_text_content(Some(&format!("Value: {counter}")));
+        }
+    }) as Box<dyn FnMut(_)>);
+
+    decrement.add_event_listener_with_callback("click", closure_dec.as_ref().unchecked_ref())
+    .expect("Failed to add event listener");
+    closure_dec.forget();
 
     Ok(())
 }

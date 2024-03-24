@@ -21,5 +21,8 @@ features = [
 'Node', 
 'Window', 
 'MouseEvent', 
-'Window']
+'Window',
+'HtmlButtonElement',
+'console'
+]
 
