@@ -1,7 +1,6 @@
-use std::slice::Windows;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::{closure::Closure, JsValue};
-use web_sys::{console, HtmlButtonElement, Document, MouseEvent, Window, Event, HtmlElement};
+use web_sys::{Document, Event, HtmlElement};
 
 #[wasm_bindgen]
 extern "C" {
@@ -48,14 +47,14 @@ fn get_element_by_id(id: &str) -> Option<HtmlElement> {
     document.get_element_by_id(id).and_then(|elem| elem.dyn_into::<HtmlElement>().ok())
 }
 
-static mut counter:i32 = 0;
+static mut COUNTER:i32 = 0;
 
 /** integer counter value update to html element  */
 fn update_counter_display(id: &str) 
 {
     unsafe {
         // Counter değerini alıyoruz
-        let counter_value = counter;
+        let counter_value = COUNTER;
         let str_data = format!("Value: {}",counter_value);
         // Counter değerini gösterecek olan <p> öğesini tespit ediyoruz
         if let Some(counter_p) = get_element_by_id(id) {
@@ -78,8 +77,8 @@ fn run() -> Result<(), JsValue>
         let closure_inc = Closure::wrap(Box::new(move |_eventi: Event| 
             {
                 unsafe{
-                    counter +=1;
-                    web_sys::console::log_1(&format!("Counter Value: {}", counter).into());
+                    COUNTER +=1;
+                    web_sys::console::log_1(&format!("Counter Value: {}", COUNTER).into());
                     update_counter_display("counter_display");
                 }
         
@@ -106,8 +105,8 @@ fn run() -> Result<(), JsValue>
         let closure_dec = Closure::wrap(Box::new(move |_eventxd: Event| 
         {
             unsafe{
-                counter -=1;
-                web_sys::console::log_1(&format!("Counter Value: {}", counter).into());
+                COUNTER -=1;
+                web_sys::console::log_1(&format!("Counter Value: {}", COUNTER).into());
                 update_counter_display("counter_display");
             }
         }) as Box<dyn FnMut(_)>);
